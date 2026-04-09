@@ -1,0 +1,1 @@
+for vol in postgres_data pgadmin_data directus_data n8n_data traefik_data qdrant_storage; do docker volume create $vol; done

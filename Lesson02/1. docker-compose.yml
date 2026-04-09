@@ -1,0 +1,183 @@
+volumes:
+  postgres_data:
+    external: true
+  pgadmin_data:
+    external: true
+  directus_data:
+    external: true
+  n8n_data:
+    external: true
+  traefik_data:
+    external: true
+  qdrant_storage:
+    external: true
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    restart: unless-stopped
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__STORAGE__HNSW__ON_DISK=true
+      - QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS=2
+
+  traefik:
+    image: "traefik:v3.6.2"
+    restart: always
+    container_name: traefik
+    command:
+      - "--api=true"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.mytlschallenge.acme.httpchallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - traefik_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  postgres:
+    image: postgres:17
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgresroot
+      POSTGRES_PASSWORD: Postgres6755 # use this password for postgres authentication
+      POSTGRES_DB: n8n_db
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8"
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgresroot -d n8n_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    configs:
+      - source: init_db
+        target: /docker-entrypoint-initdb.d/init.sql
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: n8n
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.n8n.rule=Host(`wf.muhamadshamsi.com`) # put your url here
+      - traefik.http.routers.n8n.tls=true
+      - traefik.http.routers.n8n.entrypoints=websecure
+      - traefik.http.routers.n8n.tls.certresolver=mytlschallenge
+      - traefik.http.middlewares.n8n.headers.SSLRedirect=true
+      - traefik.http.middlewares.n8n.headers.STSSeconds=315360000
+      - traefik.http.middlewares.n8n.headers.browserXSSFilter=true
+      - traefik.http.middlewares.n8n.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.n8n.headers.forceSTSHeader=true
+      - traefik.http.middlewares.n8n.headers.SSLHost=muhamadshamsi.com # put your domain here
+      - traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.n8n.headers.STSPreload=true
+      - traefik.http.routers.n8n.middlewares=n8n@docker
+    environment:
+      - N8N_HOST=wf.muhamadshamsi.com  # put your url here
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://wf.muhamadshamsi.com # put your url here
+      - GENERIC_TIMEZONE=Asia/Dubai
+      - TZ=Asia/Dubai
+      - N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true
+      - N8N_EDITOR_BASE_URL=https://wf.muhamadshamsi.com # put your url here
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - N8N_CODE_NODE_USE_FILE_SYSTEM_ACCESS=true
+      - NODE_FUNCTION_ALLOW_BUILTIN=*
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_TRUST_PROXY=true
+      - N8N_GIT_NODE_DISABLE_BARE_REPOS=true
+      - N8N_PROXY_HOPS=1
+      - N8N_EXTERNAL_HOOKS_URLS_BASE_URL=https://wf.muhamadshamsi.com # put your url here
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      # Database
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_USER=postgresroot
+      - DB_POSTGRESDB_PASSWORD=Postgres6755 #this should be the same password as line 58
+      - DB_POSTGRESDB_DATABASE=n8n_db
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - /local-files:/files
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=contact@muhamadshamsi.com # put your email id here
+      - PGADMIN_DEFAULT_PASSWORD=Pgadmin6755 #please put a password here
+      - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True
+      - PGADMIN_CONFIG_WTF_CSRF_ENABLED=True
+      - PGADMIN_CONFIG_WTF_CSRF_CHECK_DEFAULT=True
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "127.0.0.1:5050:80"
+
+  directus:
+    image: directus/directus:latest
+    container_name: directus
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.directus.rule=Host(`directus.muhamadshamsi.com`) # put your domain here here
+      - traefik.http.routers.directus.tls=true
+      - traefik.http.routers.directus.entrypoints=websecure
+      - traefik.http.routers.directus.tls.certresolver=mytlschallenge
+      - traefik.http.middlewares.directus.headers.SSLRedirect=true
+      - traefik.http.middlewares.directus.headers.STSSeconds=315360000
+      - traefik.http.middlewares.directus.headers.browserXSSFilter=true
+      - traefik.http.middlewares.directus.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.directus.headers.forceSTSHeader=true
+      - traefik.http.middlewares.directus.headers.SSLHost=muhamadshamsi.com # put your domain here
+      - traefik.http.middlewares.directus.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.directus.headers.STSPreload=true
+      - traefik.http.routers.directus.middlewares=directus@docker
+    environment:
+      KEY: "DwQIsYvfIgD9QMRUuMSTFd6UBDFKp4V9FdTjmRUq+SA="
+      SECRET: "BM511S7CFpzLMUx9OmwHveJIudORPbGM3AzzvMCiYdI="
+      DB_CLIENT: pg
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: directus_db
+      DB_USER: postgresroot
+      DB_PASSWORD: Postgres6755 #please put a password here
+      ADMIN_EMAIL: contact@muhamadshamsi.com # your email id to login here
+      ADMIN_PASSWORD: Directus6755
+      PUBLIC_URL: https://directus.muhamadshamsi.com  # put your url here
+      WEBSOCKETS_ENABLED: "true"
+    volumes:
+      - directus_data:/directus/uploads
+
+configs:
+  init_db:
+    content: |
+      CREATE DATABASE directus_db WITH OWNER = postgresroot ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8' TEMPLATE = template0;

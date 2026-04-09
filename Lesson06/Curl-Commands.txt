@@ -1,0 +1,18 @@
+Go to Windows type 'cmd'
+
+
+REGISTER -- WHATSAPP NUMBER
+
+curl -X POST "https://graph.facebook.com/v21.0/YOUR_WHATAPP_PHONE_ID/register" -H "Authorization: Bearer YOUR_SYSTEM_USER_ACCESS_TOKEN" -H "Content-Type: application/json" -d "{\"messaging_product\":\"whatsapp\",\"pin\":\"123456\"}"
+
+Replace the fields
+
+
+GET PAGE ACCESS TOKEN FOR FACEBOOK
+
+curl.exe -G "https://graph.facebook.com/v21.0/FACEBOOK_PAGE_ID_IN_META_BUSINESS_MANAGER" -d "fields=access_token" -d "access_token=YOUR_SYSTEM_USER_ACCESS_TOKEN"
+
+
+GET PAGE ACCESS TOKEN FOR INSTAGRAM
+
+curl.exe -G "https://graph.facebook.com/v21.0/INSTAGRAM_ID_IN_META_BUSINESS_MANAGER" -d "fields=access_token,instagram_business_account" -d "access_token=YOUR_SYSTEM_USER_ACCESS_TOKEN"
