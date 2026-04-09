@@ -23,11 +23,11 @@ Learn to build real AI-powered automations from scratch — self-hosted, practic
 
 | # | Lesson | Resources |
 |---|--------|-----------|
-| 01 | Introduction to Agentic AI | — |
+| 01 | Introduction to Agentic AI | — | No Files
 | 02 | Setup n8n (Self Hosted) With Docker | [/lesson-02](/lesson-02) |
-| 03 | Setting Up Directus, Tables & Saving Test Post | [/lesson-03](/lesson-03) |
+| 03 | Setting Up Directus, Tables & Saving Test Post | No Files
 | 04 | Social Media Post Generator | [/lesson-04](/lesson-04) |
-| 05 | Creating Authentication for LinkedIn & X | [/lesson-05](/lesson-05) |
+| 05 | Creating Authentication for LinkedIn & X |
 | 06 | Facebook Tokens - Long Lived, Never Expire | [/lesson-06](/lesson-06) |
 
 ---
