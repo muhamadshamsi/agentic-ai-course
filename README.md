@@ -1,2 +1,63 @@
-# agentic-ai-course
-Free course: Build AI-powered automations with n8n, Directus &amp; social media APIs. No fluff, just build.
+# Agentic AI & Automation with n8n — Free Course
+
+> No Fluff. Just Build.
+
+Learn to build real AI-powered automations from scratch — self-hosted, practical, and actually useful.
+
+📺 **Watch the course:** [[YouTube Playlist](https://www.youtube.com/playlist?list=PLsPqk4YIyStv-umePlg2aTf0Cxy-aXi3-)]
+
+---
+
+## What You'll Build
+
+✅ Self-hosted n8n on Docker
+✅ Directus database for content storage
+✅ AI-powered social media post generator
+✅ OAuth setup for LinkedIn, X, Facebook
+✅ Long-lived Facebook tokens that never expire
+✅ Automated posting workflows
+
+---
+
+## Course Lessons
+
+| # | Lesson | Resources |
+|---|--------|-----------|
+| 01 | Introduction to Agentic AI | — |
+| 02 | Setup n8n (Self Hosted) With Docker | [/lesson-02](/lesson-02) |
+| 03 | Setting Up Directus, Tables & Saving Test Post | [/lesson-03](/lesson-03) |
+| 04 | Social Media Post Generator | [/lesson-04](/lesson-04) |
+| 05 | Creating Authentication for LinkedIn & X | [/lesson-05](/lesson-05) |
+| 06 | Facebook Tokens - Long Lived, Never Expire | [/lesson-06](/lesson-06) |
+
+---
+
+## 📥 How to Download
+
+No git experience? No problem.
+
+1. Click the green **"Code"** button above
+2. Click **"Download ZIP"**
+3. Extract and use
+
+---
+
+## Need Help?
+
+Stuck on something? Book a 1-on-1 call:
+
+👉 [cal.com/muhamadshamsi](https://cal.com/muhamadshamsi)
+
+✉️ contact@muhamadshamsi.com
+
+---
+
+## About
+
+I build things, automate boring stuff, and share what actually works.
+
+काम की बात 🎯
+
+---
+
+⭐ Star this repo if it helped you!
