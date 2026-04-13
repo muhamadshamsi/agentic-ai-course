@@ -1,0 +1,20 @@
+###
+Directus URL Filter
+####
+https://your-directus-url-here/items/socialmediaposts?filter[postedon][_null]=true&filter[socialimage][_nnull]=true&sort=-date_created&limit=1
+
+###
+
+
+###
+Directus social media image ID 
+###
+https://your-directus-url-here/assets/image-id-from-directus-field
+###
+
+
+###
+Directus Update Postedon Date
+####
+https://your-directus-url-here/items/socialmediaposts/{{ $('GetDirectusPost').item.json.data[0].id }}
+

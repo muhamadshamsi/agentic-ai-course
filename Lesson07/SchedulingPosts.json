@@ -1,0 +1,185 @@
+{
+  "name": "SchedulingPosts",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-512, 160],
+      "id": "fea3ea87-e0c9-4646-aaf8-d7b32e11ec43",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "url": "https://YOUR-DIRECTUS-DOMAIN/items/socialmediaposts?filter[postedon][_null]=true&filter[socialimage][_nnull]=true&sort=-date_created&limit=1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-320, -112],
+      "id": "8c09fd91-cf73-4a76-8539-4a2f0046c40a",
+      "name": "GetDirectusPost"
+    },
+    {
+      "parameters": {
+        "url": "=https://YOUR-DIRECTUS-DOMAIN/assets/{{ $json.data[0].socialimage }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-112, -112],
+      "id": "3af8d4ad-8ad3-4b9e-bb04-2261c0e118de",
+      "name": "GetImageForPosting"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v23.0",
+        "node": "YOUR_FACEBOOK_PAGE_ID",
+        "edge": "photos",
+        "sendBinaryData": true,
+        "binaryPropertyName": "data",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $json.data[0].facebookposts }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [208, -112],
+      "id": "4905fe78-9444-4669-84d6-1aa1c7ef9bbf",
+      "name": "Post-To-Facebook-"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.data[0].Xposts }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [208, -288],
+      "id": "8884d47e-cc17-4e44-b9e4-75c2b05435f9",
+      "name": "Create-Tweet"
+    },
+    {
+      "parameters": {
+        "postAs": "organization",
+        "organization": "YOUR_LINKEDIN_ORG_ID",
+        "text": "={{ $json.data[0].linkedinposts }}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [208, 80],
+      "id": "fbb7ab7e-8979-40bc-8549-635deac9a361",
+      "name": "Create-A-Linked-Post"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://YOUR-DIRECTUS-DOMAIN/items/socialmediaposts/{{ $('GetDirectusPost').item.json.data[0].id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"postedon\": \"{{$now.toISO()}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [688, -112],
+      "id": "29fe79d3-9ec2-49bc-a4dd-035e5ed69688",
+      "name": "Add Post Status to Directus"
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [464, -128],
+      "id": "953d2d5d-f5a1-428d-949c-6e8224536471",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9,14,18 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [-544, -112],
+      "id": "1841c91f-0add-486c-a5b3-b9a32ba939fa",
+      "name": "0900AM 2PM 6PM"
+    },
+    {
+      "parameters": {
+        "content": "## Social Media Poster ##\n** Runs at 0900AM 2PM 6PM **\n",
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-576, -288],
+      "id": "05cc3dc3-20db-41dc-99f5-1005fe0f1b9c",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [[]]
+    },
+    "GetDirectusPost": {
+      "main": [[{"node": "GetImageForPosting", "type": "main", "index": 0}]]
+    },
+    "GetImageForPosting": {
+      "main": [[
+        {"node": "Post-To-Facebook-", "type": "main", "index": 0},
+        {"node": "Create-Tweet", "type": "main", "index": 0},
+        {"node": "Create-A-Linked-Post", "type": "main", "index": 0}
+      ]]
+    },
+    "Post-To-Facebook-": {
+      "main": [[{"node": "Merge", "type": "main", "index": 1}]]
+    },
+    "Create-A-Linked-Post": {
+      "main": [[{"node": "Merge", "type": "main", "index": 2}]]
+    },
+    "Create-Tweet": {
+      "main": [[{"node": "Merge", "type": "main", "index": 0}]]
+    },
+    "Merge": {
+      "main": [[{"node": "Add Post Status to Directus", "type": "main", "index": 0}]]
+    },
+    "0900AM 2PM 6PM": {
+      "main": [[{"node": "GetDirectusPost", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
