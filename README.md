@@ -29,7 +29,7 @@ Learn to build real AI-powered automations from scratch — self-hosted, practic
 | 04 | Social Media Post Generator | [/Lesson04](/Lesson04) 
 | 05 | Creating Authentication for LinkedIn & X | - 
 | 06 | Facebook Tokens - Long Lived, Never Expire | [/Lesson06](/Lesson06) |
-| 06 | Scheduling Social Media Posts, Your First AI Agent in Action - Long Lived, Never Expire | [/Lesson07](/Lesson07) |
+| 07 | Scheduling Social Media Posts, Your First AI Agent in Action - Long Lived, Never Expire | [/Lesson07](/Lesson07) |
 
 ---
 
