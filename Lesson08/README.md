@@ -30,13 +30,13 @@
 
 ### Step 3: Update Your Webhook URL
 
-In the code, find this line:
+In the code, `chat-widget.html` find this line:
 
 ```javascript
 webhookUrl: 'https://your-n8n-webhook-url/webhook/0476ea4a-06f5-40c5-452fc-c4876a8541cd/chat',
 ```
 
-Replace it with **your actual n8n webhook URL**.
+Replace it with **your actual n8n webhook URL of the Flow-2-ChatBot.json Workflow**.
 
 You can also customize the text and branding in the code.
 
