@@ -30,6 +30,7 @@ Learn to build real AI-powered automations from scratch — self-hosted, practic
 | 05 | Creating Authentication for LinkedIn & X | - 
 | 06 | Facebook Tokens - Long Lived, Never Expire | [/Lesson06](/Lesson06) |
 | 07 | Scheduling Social Media Posts, Your First AI Agent in Action | [/Lesson07](/Lesson07) |
+| 08 | Create an AI Chatbot for Any WordPress Site (RAG) - [/Lesson08](/Lesson08)
 
 ---
 
