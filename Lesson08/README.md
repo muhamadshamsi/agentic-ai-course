@@ -6,6 +6,7 @@
 |------|-------------|
 | `Flow-1-Update-Vector-Database.json` | n8n workflow to fetch WordPress posts and store in vector database |
 | `Flow-2-HRC-ChatBot.json` | n8n workflow for chatbot webhook responses |
+| `chat-widget.html` | Code for the Chat widget on Wordpress site
 
 ---
 
