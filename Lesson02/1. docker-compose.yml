@@ -140,7 +140,7 @@ services:
       - "127.0.0.1:5050:80"
 
   directus:
-    image: directus/directus:latest
+    image: directus/directus:11.17.4
     container_name: directus
     restart: always
     depends_on:
